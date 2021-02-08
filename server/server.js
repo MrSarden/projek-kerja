@@ -9,28 +9,40 @@ const app = express();
 app.use(express.json());
 
 // open all data
-app.get("/api/v1/database/", (req, res) => {
+app.get("/api/v1/database/", async (req, res) => {
 
-	db.query("select * from PROJECT")
+	try{
+		const result = await db.query("select * from data_pop")
+	console.log(result.rows);
 	res.status(200).json({
-		status: "berjalan",
+		status: "SUCCess",
+		result: result.rows.length,
 		data: {
-			Hari: "senin",
-			Jam: "09:00"
+			POP: result.rows
 		},
 	});
-	console.log("bonjour");
+	} catch (err) {
+		console.log(err);
+	}
+	
+	
 });
 
 // open one data
-app.get("/api/v1/database/:id", (req, res) => {
-	console.log(req.params);
+app.get("/api/v1/database/:id", async (req, res) => {
+	const { id } = req.params;
+	// const { password }  = req.query;
+
+	// if(password != 123 ) return res.status(403).json({status: "failed"});
+
+	const {rows} = await db.query(`SELECT * FROM data_pop WHERE id=${id}`)
+	console.log(rows[0]);
 
 	res.status(200).json({
-		status: "berjalan",
+		status: "success",
 		data: {
-			Hari: "Rabu",
-			Jam: "14:00"
+			pop: rows[0].nama_pop,
+			tanggal: rows[0].tanggal
 		},
 	});
 });
